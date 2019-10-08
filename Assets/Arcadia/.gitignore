@@ -1,0 +1,58 @@
+# =============== #
+#     Arcadia     #
+# =============== #
+*.mdb*
+**/Compiled.meta
+**/Compiled/*.exe*
+**/Compiled/*.dll*
+**/Compiled/Editor*.dll*
+**/Export.meta
+**/Export/*.dll*
+Source/clojure/**/*.meta
+**/*.clj.meta
+**/*.clj.dll.meta
+**/*.md.meta
+**/*.edn.meta
+
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Obj/
+UnityGenerated/
+Library/
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+/Libraries.meta
+/Libraries/
+/Helpers/TimeSnap.cs.meta
+/Source/arcadia/debug.clj.meta
+/Helpers/Garden.cs.meta
+/Tests.meta
+/Tests/arcadia.meta
+/LICENSE.meta
