@@ -5,14 +5,14 @@
    [arcadia.introspection :as i])
   (:import
    (UnityEngine.Random)
-   [UnityEngine MeshRenderer FixedJoint2D SpriteRenderer BoxCollider2D Transform Animator Input Rigidbody2D UI.Text]))
+   [UnityEngine MeshRenderer Time FixedJoint2D SpriteRenderer BoxCollider2D Transform Animator Input Rigidbody2D UI.Text]))
 
 (set! *warn-on-reflection* true)
 
 (def skateboard-height (float -2.1))
 
 (def col-height-range [(float 2.8) (float -2.0)])
-
+(def skateboard-hold-time (float 2))
 (def  empty-up-force (l/v2 0 120))
 (def  with-skateboard-up-force (l/v2 0 300))
 
@@ -60,7 +60,7 @@
     (.SetTrigger anim "Die")))
 
 (defn on-bird-update [obj k]
-  (let [{:keys [dead? ^Rigidbody2D rigid-body ^Animator animator up-force]} (state obj k)]
+  (let [{:keys [skateboard-drop-time dead? ^Rigidbody2D rigid-body ^Animator animator up-force]} (state obj k)]
     (if-not dead?
       (do
 
@@ -70,7 +70,20 @@
             (set! (.. rigid-body velocity) (l/v2 0 0))
             (.AddForce rigid-body up-force)
             (let [anim (:animator (state obj k))]
-              (.SetTrigger animator "Flap")))))
+              (.SetTrigger animator "Flap"))))
+
+        (when (> (Time/time) skateboard-drop-time)
+          (log "Dropping skateboard..........")
+          (when-let [fj (cmpt obj FixedJoint2D)]
+            (log "Got fixed-joint")
+            (let [sb (gobj (.. fj connectedBody))]
+              (cmpt- obj FixedJoint2D)
+              (retire sb)))
+
+          (update-state obj k (fn [s] (-> s
+                                          (assoc  :skateboard-drop-time (float 999999))
+                                          (assoc :up-force empty-up-force))))
+          (log "Dropped skateboard")))
 
       ;; If dead then flap restarts
       (when (Input/GetButtonDown "Jump")
@@ -92,17 +105,19 @@
         (set! (..  c enabled) false))
 
       (= (.. cobj tag) "Skateboard")
-      (do
+      (let [skateboard cobj]
         (log "Scatebrd&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        (role- cobj :scroll)
+        (role- skateboard :scroll)
         (log "removed roll")
-        (set! (.. (cmpt cobj BoxCollider2D) isTrigger) false)
-        (set! (.. (cmpt cobj Rigidbody2D) gravityScale) 1)
+        (set! (.. (cmpt skateboard BoxCollider2D) isTrigger) false)
+        (set! (.. (cmpt skateboard Rigidbody2D) gravityScale) 1)
         (with-cmpt obj [fj FixedJoint2D]
           (log "Got fixed-joint")
-          (set! (.. fj connectedBody) (cmpt cobj Rigidbody2D))
+          (set! (.. fj connectedBody) (cmpt skateboard Rigidbody2D))
           (log "set fixed-joint"))
-        (update-state obj :flap (fn [s] (assoc s :up-force with-skateboard-up-force)))
+        (update-state obj :flap (fn [s] (-> s
+                                            (assoc :up-force with-skateboard-up-force)
+                                            (assoc :skateboard-drop-time (+ skateboard-hold-time (Time/time))))))
 
         #_(set! (.. cobj transform position) (l/v3 0 0 0)))
 
@@ -114,7 +129,8 @@
     (role+ bird :flap {:state {:dead? false
                                :rigid-body rb
                                :up-force empty-up-force
-                               :animator (cmpt bird Animator)}
+                               :animator (cmpt bird Animator)
+                               :skateboard-drop-time (float 9999999)}
                        :update #'on-bird-update
                        :on-collision-enter2d #'on-bird-collision-enter-2d
                        :on-trigger-enter2d #'on-bird-trigger-enter-2d})
