@@ -1,1 +1,3 @@
 # flappyBirds
+
+I worked through the FlappyBirds unity tutorial, but used Arcadia/Clojure instead of C#.  There are also a couple of small changes to the game.  You only score points by running into the coins and there is a "skateboard" that you can land on which protects you from landing on the ground or the tops of columns.  Right now the "skateboard" is just a white rectangle, but maybe I'll find a nicer graphic for it.  I also intend to make the skateboard fall off after it has been attached to the bird for a certain amount of time.  Maybe also make some High Value coins under very low ceilings so they can only be retrieved by sliding on the skateboard.  But maybe not.  It's not a very interesting project...
