@@ -12,7 +12,7 @@
 (def skateboard-height (float -2.1))
 
 (def col-height-range [(float 2.8) (float -2.0)])
-(def skateboard-hold-time (float 2))
+(def skateboard-hold-time (float 20))
 (def  empty-up-force (l/v2 0 120))
 (def  with-skateboard-up-force (l/v2 0 300))
 
