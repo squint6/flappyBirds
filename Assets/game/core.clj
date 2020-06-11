@@ -164,9 +164,13 @@
         (.Translate t (float -0.08) 0 0)
         ))))
 
+(def dynamic-func (atom nil))
+
 (defn scroll-start [obj k]
+  (log "Dynamic func: " (@dynamic-func 3))
   (let [t (cmpt obj Transform)]
     (set! (.. t position x) 0)))
+
 
 (defn add-scroll-role [obj]
   (role+ obj :scroll
@@ -174,10 +178,12 @@
           :update #'scroll-update
           :start #'scroll-start}))
 
+
 (defn on-controller-start [obj k]
   (log "On conttroller start called!!!!!")
   (init-bird)
   (reset! dead? false)
+  (reset! dynamic-func (eval '(fn [x] (+ x 1))))
   (add-scroll-role (object-named "Ground"))
   (add-scroll-role (object-named "Ground2"))
   (add-scroll-role (object-named "Skateboard"))
